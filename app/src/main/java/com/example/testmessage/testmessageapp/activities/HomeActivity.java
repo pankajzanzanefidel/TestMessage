@@ -20,6 +20,8 @@ import com.example.testmessage.testmessageapp.adapter.CustomAdapter;
 import com.example.testmessage.testmessageapp.contractor.HomeContractor;
 import com.example.testmessage.testmessageapp.database.DatabaseHouse;
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelContact;
+import com.example.testmessage.testmessageapp.executor.AppExecutor;
+import com.example.testmessage.testmessageapp.helper.Constants;
 import com.example.testmessage.testmessageapp.helper.PreferenceUtils;
 import com.example.testmessage.testmessageapp.presenter.PresenterHome;
 import com.example.testmessage.testmessageapp.utils.PathUtil;
@@ -51,6 +53,25 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         initView();
         init();
 
+        AppExecutor.getINSTANCE().getDiskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+
+                StringBuilder builder = new StringBuilder();
+                for(int i =0; i<100;i++){
+
+                     char c = (char) (65+i);
+                    builder.append("55555555"+i);
+                    builder.append(",");
+                    builder.append(c+"adam");
+                    builder.append(",");
+                    builder.append(c+"Adamowy");
+                    builder.append(System.getProperty("line.separator"));
+                }
+
+                Log.d("WASTE",builder.toString());
+            }
+        });
     }
 
     @Override
@@ -97,29 +118,18 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
             if(s.length()<=0){
                 return;
             }
-            if(prevLength>s.length()){
-                Log.d("WASTE","Back Press Clicked: "+s.charAt(s.length()-1));
-                if(lastChar == '{'){
-
-                    Log.d("WASTE","Deleted Open Bracket");
-                    flagOpen = false;
-                    charOpenAt = 0;
-                }
-            }else{
-                Log.d("WASTE","start:"+start+" count:"+count+" before:"+before);
                 if(s.charAt(s.length()-1) == '{'){
                     flagOpen = true;
                     charOpenAt = s.length()-1;
                 }else if(s.charAt(s.length()-1) == '}'){
                     flagOpen = false;
                     charOpenAt = 0;
-                }else if(flagOpen){
+                }else if(flagOpen && s.length()>charOpenAt){
                     loadData(s.subSequence(charOpenAt+1,s.length()).toString());
+                }else{
+                    flagOpen = false;
+                    charOpenAt = 0;
                 }
-
-            }
-
-            prevLength = s.length();
             }
 
 
@@ -134,6 +144,8 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     private void loadData(String text){
         Log.e("WASTE", text);
+
+        presenterHome.loadContacts(DatabaseHouse.getSingleTon(getApplicationContext()),text+"%");
     }
 
     @Override
