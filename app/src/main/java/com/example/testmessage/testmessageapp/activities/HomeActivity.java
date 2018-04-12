@@ -52,7 +52,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     private int REQUESTCODE_PICK_FILE = 101;
 
 
-    private EditText editMessage = null,editTimeInSec = null,editstartTimeRange = null, editEndTimeRange = null;
+    private EditText editMessage = null, editTimeInSec = null, editstartTimeRange = null, editEndTimeRange = null;
     private RadioGroup radioGroup = null;
     private RecyclerView recyclerView = null;
 
@@ -114,6 +114,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
         editMessage.addTextChangedListener(new TextWatcher() {
             Character lastChar;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if (s.length() > 0) {
@@ -265,24 +266,24 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 saveMessage();
 
                 int timeDelayInSeconds = 0;
-                switch (radioGroup.getCheckedRadioButtonId()){
+                switch (radioGroup.getCheckedRadioButtonId()) {
                     case R.id.radioTime:
-                        timeDelayInSeconds = Integer.parseInt(!TextUtils.isEmpty(editTimeInSec.getText().toString())?editTimeInSec.getText().toString():"0");
+                        timeDelayInSeconds = Integer.parseInt(!TextUtils.isEmpty(editTimeInSec.getText().toString()) ? editTimeInSec.getText().toString() : "0");
                         break;
                     case R.id.radioRandom:
-                        timeDelayInSeconds =  RandomUtils.getRandomInrange(Integer.parseInt(!TextUtils.isEmpty(editstartTimeRange.getText().toString())?editstartTimeRange.getText().toString():"0"),
-                                Integer.parseInt(!TextUtils.isEmpty(editEndTimeRange.getText().toString())?editEndTimeRange.getText().toString():"0"));
+                        timeDelayInSeconds = RandomUtils.getRandomInrange(Integer.parseInt(!TextUtils.isEmpty(editstartTimeRange.getText().toString()) ? editstartTimeRange.getText().toString() : "0"),
+                                Integer.parseInt(!TextUtils.isEmpty(editEndTimeRange.getText().toString()) ? editEndTimeRange.getText().toString() : "0"));
 
                         break;
                 }
                 String message = editMessage.getText().toString();
-                jobTest(message, Arrays.asList(new String[]{"09870927098","08830634929"}),timeDelayInSeconds);
+                jobTest(message, Arrays.asList(new String[]{"09870927098", "08830634929"}), timeDelayInSeconds);
 
                 break;
         }
     }
 
-    private void jobTest(String message,List<String> listNumbers,int delayInSeconds) {
+    private void jobTest(String message, List<String> listNumbers, int delayInSeconds) {
 
         if (TextUtils.isEmpty(message)) {
             Toast.makeText(this, getString(R.string.message_empty_error), Toast.LENGTH_SHORT).show();
@@ -295,6 +296,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(jobInfo);
     }
+
     @Override
     public void itemClicked(View view, int position) {
 
