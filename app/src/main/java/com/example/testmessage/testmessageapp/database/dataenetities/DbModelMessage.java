@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import com.example.testmessage.testmessageapp.enums.EnumMessageState;
 import com.example.testmessage.testmessageapp.helper.Constants;
 
 
@@ -16,21 +17,24 @@ public class DbModelMessage {
     @ColumnInfo(name = Constants.DatabaseConstants.MESSAGE.COLUMN_NAME_MESSAGE_ID)
     private int id;
 
+    @ColumnInfo(name = Constants.DatabaseConstants.MESSAGE.COLUMN_NAME_JOB_ID)
+    private int jobId = 0;
+
     @ColumnInfo(name = Constants.DatabaseConstants.MESSAGE.COLUMN_NAME_MESSAGE_NUMBERS)
     private String numbers = null;
 
     @ColumnInfo(name = Constants.DatabaseConstants.MESSAGE.COLUMN_NAME_MESSAGE_TEXT)
     private String text = null;
 
-    @ColumnInfo(name = Constants.DatabaseConstants.MESSAGE.COLUMN_NAME_MESSAGE_IS_NOTIFY)
-    private boolean isNotify = false;
+    @ColumnInfo(name = Constants.DatabaseConstants.MESSAGE.COLUMN_NAME_MESSAGE_STATE)
+    private int state = EnumMessageState.PENDING.ordinal();
 
-    public boolean isNotify() {
-        return isNotify;
+    public int getState() {
+        return state;
     }
 
-    public void setNotify(boolean notify) {
-        isNotify = notify;
+    public void setState(int state) {
+        this.state = state;
     }
 
     public int getId() {
@@ -39,6 +43,14 @@ public class DbModelMessage {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(int jobId) {
+        this.jobId = jobId;
     }
 
     public String getNumbers() {

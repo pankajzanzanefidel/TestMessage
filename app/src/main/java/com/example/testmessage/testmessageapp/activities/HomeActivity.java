@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -27,11 +26,13 @@ import com.example.testmessage.testmessageapp.database.dataenetities.DbModelCont
 
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelMessage;
 
+import com.example.testmessage.testmessageapp.enums.EnumMessageState;
 import com.example.testmessage.testmessageapp.helper.PreferenceUtils;
-import com.example.testmessage.testmessageapp.jobschedules.SmsJobSchedule;
+import com.example.testmessage.testmessageapp.jobschedules.UtilsJobSchedule;
 import com.example.testmessage.testmessageapp.presenter.PresenterHome;
 import com.example.testmessage.testmessageapp.utils.PathUtil;
 import com.example.testmessage.testmessageapp.utils.RandomUtils;
+import com.example.testmessage.testmessageapp.utils.UtilsAlarmManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,6 +68,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     List<DbModelContact> dbModelContacts = null;
 
     private CustomAdapter customAdapter = null;
+    public static  final int PERIODIC_JOB_INTERVAL_SEC = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
         initView();
         init();
-
+        UtilsAlarmManager.setRepeatingNotification(this);
     }
 
     @Override
@@ -217,10 +219,12 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         startActivityForResult(mediaIntent, REQUESTCODE_PICK_FILE);
     }
 
-    private void saveMessage() {
+    private void saveMessage(int jobId) {
         DbModelMessage dbModelMessage = new DbModelMessage();
+        dbModelMessage.setJobId(jobId);
         dbModelMessage.setNumbers(numbers);
         dbModelMessage.setText(messageBody);
+        dbModelMessage.setState(EnumMessageState.PENDING.ordinal());
         presenterHome.saveMessage(DatabaseHouse.getSingleTon(getApplicationContext()), dbModelMessage);
     }
 
@@ -262,8 +266,6 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 break;
             case R.id.btnSend:
 
-                saveMessage();
-
                 int timeDelayInSeconds = 0;
                 switch (radioGroup.getCheckedRadioButtonId()){
                     case R.id.radioTime:
@@ -289,12 +291,16 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
             return;
         }
 
-        SmsJobSchedule smsJob = new SmsJobSchedule();
+        UtilsJobSchedule smsJob = new UtilsJobSchedule();
         JobInfo jobInfo = smsJob.createSmsJobSchedule(this, message, listNumbers, delayInSeconds * 1000);
 
         JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(jobInfo);
+
+        //Save message to database
+        saveMessage(jobInfo.getId());
     }
+
     @Override
     public void itemClicked(View view, int position) {
 
