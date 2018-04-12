@@ -140,37 +140,6 @@ public class BaseActivity extends AppCompatActivity implements IView {
             return;
         }
 
-       /* switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_SEND_SMS: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getApplicationContext(), " permissin granted",
-                            Toast.LENGTH_LONG).show();
-                    preferenceUtils.putBoolean(Constants.SHARED_PREFERNCE.PREFERENCE_SMS_PERRMISION, true);
-
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "permission nOt granted", Toast.LENGTH_LONG).show();
-                    preferenceUtils.putBoolean(Constants.SHARED_PREFERNCE.PREFERENCE_SMS_PERRMISION, false);
-                    return;
-                }
-            }
-            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getApplicationContext(), " permissin granted",
-                            Toast.LENGTH_LONG).show();
-                    preferenceUtils.putBoolean(Constants.SHARED_PREFERNCE.PREFERENCE_SMS_PERRMISION, true);
-
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            "permission nOt granted", Toast.LENGTH_LONG).show();
-                    preferenceUtils.putBoolean(Constants.SHARED_PREFERNCE.PREFERENCE_SMS_PERRMISION, false);
-                    return;
-                }
-            }
-        }
-*/
 
     }
 }

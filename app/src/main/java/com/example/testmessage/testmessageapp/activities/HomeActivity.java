@@ -37,7 +37,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeActivity extends BaseActivity implements HomeContractor.IViewHome, View.OnClickListener {
+public class HomeActivity extends BaseActivity implements HomeContractor.IViewHome, View.OnClickListener, CLickListner {
 
     private PresenterHome presenterHome = null;
     private int REQUESTCODE_PICK_FILE = 101;
@@ -47,6 +47,9 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     private boolean flagOpen = false;
     private int charOpenAt = 0;
     private int prevLength = 0;
+    List<DbModelContact> dbModelContacts = null;
+
+    private CustomAdapter customAdapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,13 +95,14 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         editMessage.addTextChangedListener(new TextWatcher() {
 
             Character lastChar;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                if(s.length()>0){
-                    lastChar = s.charAt(s.length()-1);
-                }else{
-                    lastChar=null;
+                if (s.length() > 0) {
+                    lastChar = s.charAt(s.length() - 1);
+                } else {
+                    lastChar = null;
                 }
             }
 
@@ -106,18 +110,18 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
 
-            if(s.length()<=0){
-                return;
-            }
-                if(s.charAt(s.length()-1) == '{'){
+                if (s.length() <= 0) {
+                    return;
+                }
+                if (s.charAt(s.length() - 1) == '{') {
                     flagOpen = true;
-                    charOpenAt = s.length()-1;
-                }else if(s.charAt(s.length()-1) == '}'){
+                    charOpenAt = s.length() - 1;
+                } else if (s.charAt(s.length() - 1) == '}') {
                     flagOpen = false;
                     charOpenAt = 0;
-                }else if(flagOpen && s.length()>charOpenAt){
-                    loadData(s.subSequence(charOpenAt+1,s.length()).toString());
-                }else{
+                } else if (flagOpen && s.length() > charOpenAt) {
+                    loadData(s.subSequence(charOpenAt + 1, s.length()).toString());
+                } else {
                     flagOpen = false;
                     charOpenAt = 0;
                 }
@@ -130,13 +134,14 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
             }
         });
 
+
     }
 
 
-    private void loadData(String text){
+    private void loadData(String text) {
         Log.e("WASTE", text);
 
-        presenterHome.loadContacts(DatabaseHouse.getSingleTon(getApplicationContext()),text+"%");
+        presenterHome.loadContacts(DatabaseHouse.getSingleTon(getApplicationContext()), text + "%");
     }
 
     @Override
@@ -162,9 +167,13 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     @Override
     public void onSearchContactSuccess(List<DbModelContact> dbModelContacts) {
-        Log.e("inside", " -->"+dbModelContacts);
+
+        this.dbModelContacts = dbModelContacts;
+
         //if (null != dbModelContacts)
-            recyclerView.setAdapter(new CustomAdapter(dbModelContacts));
+        customAdapter = new CustomAdapter(dbModelContacts);
+        customAdapter.setClickListener(HomeActivity.this);
+        recyclerView.setAdapter(customAdapter);
     }
 
     @Override
@@ -234,17 +243,38 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         }
     }
 
-    private void jobTest(String message,List<String> listNumbers,int delayInSeconds){
+    private void jobTest(String message,List<String> listNumbers,int delayInSeconds) {
 
-        if(TextUtils.isEmpty(message)){
-            Toast.makeText(this,getString(R.string.message_empty_error),Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(message)) {
+            Toast.makeText(this, getString(R.string.message_empty_error), Toast.LENGTH_SHORT).show();
             return;
         }
 
         SmsJobSchedule smsJob = new SmsJobSchedule();
-        JobInfo jobInfo = smsJob.createSmsJobSchedule(this, message,listNumbers,delayInSeconds*1000);
+        JobInfo jobInfo = smsJob.createSmsJobSchedule(this, message, listNumbers, delayInSeconds * 1000);
 
         JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(jobInfo);
+    }
+    @Override
+    public void itemClicked(View view, int position) {
+
+        DbModelContact dbModelContact = dbModelContacts.get(position);
+
+        String name = dbModelContact.getName();
+        String text = editMessage.getText().toString();
+
+        int lastIndexOpenBrackect = text.lastIndexOf("{");
+
+        String str = text.substring(lastIndexOpenBrackect, text.length());
+        name = "{" + name + "};";
+        text = text.replace(str, name);
+
+        editMessage.setText("");
+        editMessage.setText(text);
+        editMessage.setSelection(text.length());
+
+
+        Toast.makeText(HomeActivity.this, str + " CLicked  " + position + name, Toast.LENGTH_SHORT).show();
     }
 }

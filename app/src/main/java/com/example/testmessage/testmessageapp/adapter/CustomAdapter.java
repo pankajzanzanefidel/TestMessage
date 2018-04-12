@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.testmessage.testmessageapp.R;
+import com.example.testmessage.testmessageapp.activities.CLickListner;
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelContact;
 
 import java.util.List;
@@ -15,6 +16,12 @@ import java.util.List;
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ContactViewholder> {
 
     private List<DbModelContact> dbModelContacts = null;
+    public CLickListner clicklistener = null;
+
+
+    public void setClickListener(CLickListner clicklistener) {
+        this.clicklistener = clicklistener;
+    }
 
     public CustomAdapter(List<DbModelContact> dbModelContacts) {
         this.dbModelContacts = dbModelContacts;
@@ -36,12 +43,20 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ContactVie
         return dbModelContacts.size();
     }
 
-    public static class ContactViewholder extends RecyclerView.ViewHolder {
+    public  class ContactViewholder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView textView = null;
 
         public ContactViewholder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             textView = (TextView) itemView.findViewById(R.id.textName);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (clicklistener != null) {
+                clicklistener.itemClicked(v, getAdapterPosition());
+            }
         }
     }
 
