@@ -22,6 +22,17 @@ public class DbModelMessage {
     @ColumnInfo(name = Constants.DatabaseConstants.MESSAGE.COLUMN_NAME_MESSAGE_TEXT)
     private String text = null;
 
+    @ColumnInfo(name = Constants.DatabaseConstants.MESSAGE.COLUMN_NAME_MESSAGE_IS_NOTIFY)
+    private boolean isNotify = false;
+
+    public boolean isNotify() {
+        return isNotify;
+    }
+
+    public void setNotify(boolean notify) {
+        isNotify = notify;
+    }
+
     public int getId() {
         return id;
     }

@@ -7,6 +7,7 @@ import com.example.testmessage.testmessageapp.contractor.HomeContractor;
 import com.example.testmessage.testmessageapp.contractor.IView;
 import com.example.testmessage.testmessageapp.database.DatabaseHouse;
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelContact;
+import com.example.testmessage.testmessageapp.database.dataenetities.DbModelMessage;
 import com.example.testmessage.testmessageapp.models.ModelHome;
 
 import java.io.InputStream;
@@ -28,13 +29,13 @@ public class PresenterHome implements HomeContractor.IPresenterHome {
     }
 
     @Override
-    public void loadContacts(DatabaseHouse databaseHouse,String name) {
-        new ModelHome().getAllContact(callBackSearchContact, databaseHouse,name);
+    public void loadContacts(DatabaseHouse databaseHouse, String name) {
+        new ModelHome().getAllContact(callBackSearchContact, databaseHouse, name);
     }
 
     @Override
     public void insertContact(DatabaseHouse databaseHouse, List<DbModelContact> dbModelContacts) {
-        new ModelHome().insertContact(iContactLoad, databaseHouse, dbModelContacts);
+        new ModelHome().insertContact(callBackIcontactLoad, databaseHouse, dbModelContacts);
     }
 
     @Override
@@ -43,8 +44,13 @@ public class PresenterHome implements HomeContractor.IPresenterHome {
         new ModelHome().parseCSV(callbackParseCsv, databaseHouse, inputStream);
     }
 
+    @Override
+    public void saveMessage(DatabaseHouse databaseHouse, DbModelMessage dbModelMessage) {
+        new ModelHome().saveMessage(callBackSavedMessage, databaseHouse, dbModelMessage);
+    }
 
-    ModelHome.IContactLoad iContactLoad = new ModelHome.IContactLoad() {
+
+    ModelHome.IContactLoad callBackIcontactLoad = new ModelHome.IContactLoad() {
         @Override
         public void onContactLoadSuccess(List<DbModelContact> dbModelContacts) {
             iViewHome.toggleProgressIndigator(false);
@@ -76,7 +82,7 @@ public class PresenterHome implements HomeContractor.IPresenterHome {
     ModelHome.ISearchContact callBackSearchContact = new ModelHome.ISearchContact() {
         @Override
         public void onContactSearchSuccess(List<DbModelContact> dbModelContacts) {
-            Log.e("inside"," --  "+dbModelContacts.size());
+            Log.e("inside", " --  " + dbModelContacts.size());
             iViewHome.onSearchContactSuccess(dbModelContacts);
         }
 
@@ -89,12 +95,12 @@ public class PresenterHome implements HomeContractor.IPresenterHome {
     ModelHome.ISaveMessage callBackSavedMessage = new ModelHome.ISaveMessage() {
         @Override
         public void onMessageSavedSuccess() {
-
+            iViewHome.onSaveMessageSuccess();
         }
 
         @Override
         public void onMessageSavedFail() {
-
+            iViewHome.onSaveMessageFail();
         }
     };
 }

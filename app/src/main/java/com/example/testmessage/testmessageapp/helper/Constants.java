@@ -26,6 +26,7 @@ public class Constants {
             public static final String COLUMN_NAME_MESSAGE_ID = "ID";
             public static final String COLUMN_NAME_MESSAGE_TEXT = "TEXT";
             public static final String COLUMN_NAME_MESSAGE_NUMBERS = "NUMBERS";
+            public static final String COLUMN_NAME_MESSAGE_IS_NOTIFY = "IS_NOTIFY";
 
         }
     }

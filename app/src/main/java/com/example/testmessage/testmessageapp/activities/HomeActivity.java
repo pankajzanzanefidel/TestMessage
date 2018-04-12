@@ -10,9 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -21,8 +20,8 @@ import com.example.testmessage.testmessageapp.adapter.CustomAdapter;
 import com.example.testmessage.testmessageapp.contractor.HomeContractor;
 import com.example.testmessage.testmessageapp.database.DatabaseHouse;
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelContact;
+import com.example.testmessage.testmessageapp.database.dataenetities.DbModelMessage;
 import com.example.testmessage.testmessageapp.executor.AppExecutor;
-import com.example.testmessage.testmessageapp.helper.Constants;
 import com.example.testmessage.testmessageapp.helper.PreferenceUtils;
 import com.example.testmessage.testmessageapp.presenter.PresenterHome;
 import com.example.testmessage.testmessageapp.utils.PathUtil;
@@ -32,17 +31,25 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class HomeActivity extends BaseActivity implements HomeContractor.IViewHome, View.OnClickListener, CLickListner {
 
     private PresenterHome presenterHome = null;
     private int REQUESTCODE_PICK_FILE = 101;
     private EditText editMessage = null;
+    private Button btnSend = null;
     RecyclerView recyclerView = null;
     private boolean flagOpen = false;
     private int charOpenAt = 0;
     private int prevLength = 0;
+
+    private String numbers = null;
+    private String messageBody = null;
+
+    List<DbModelMessage> dbModelMessages = null;
     List<DbModelContact> dbModelContacts = null;
 
     private CustomAdapter customAdapter = null;
@@ -57,25 +64,6 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         initView();
         init();
 
-        AppExecutor.getINSTANCE().getDiskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < 100; i++) {
-
-                    char c = (char) (65 + i);
-                    builder.append("55555555" + i);
-                    builder.append(",");
-                    builder.append(c + "adam");
-                    builder.append(",");
-                    builder.append(c + "Adamowy");
-                    builder.append(System.getProperty("line.separator"));
-                }
-
-                Log.d("WASTE", builder.toString());
-            }
-        });
     }
 
     @Override
@@ -90,8 +78,10 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     }
 
     private void initView() {
+        dbModelMessages = new ArrayList<>();
         findViewById(R.id.btnBrowse).setOnClickListener(this);
         recyclerView = findViewById(R.id.listview);
+        btnSend = (Button) findViewById(R.id.btnSend);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         editMessage = (EditText) findViewById(R.id.editMessage);
@@ -103,12 +93,9 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     public void bussinessLogic() {
 
         editMessage.addTextChangedListener(new TextWatcher() {
-
             Character lastChar;
-
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
                 if (s.length() > 0) {
                     lastChar = s.charAt(s.length() - 1);
                 } else {
@@ -118,7 +105,6 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
 
                 if (s.length() <= 0) {
                     return;
@@ -137,14 +123,11 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 }
             }
 
-
             @Override
             public void afterTextChanged(Editable s) {
 
             }
         });
-
-
     }
 
 
@@ -191,11 +174,34 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     }
 
+    @Override
+    public void onSaveMessageSuccess() {
+
+        // message is scheduled
+        Toast.makeText(HomeActivity.this, "Message Saved", Toast.LENGTH_LONG).show();
+        clearEditText();
+    }
+
+    @Override
+    public void onSaveMessageFail() {
+        Toast.makeText(HomeActivity.this, "Message not Saved", Toast.LENGTH_LONG).show();
+    }
+
+    private void clearEditText() {
+        editMessage.setText("");
+    }
 
     public void selectFileCode() {
         Intent mediaIntent = new Intent(Intent.ACTION_GET_CONTENT);
         mediaIntent.setType("*/*"); // Set MIME type as per requirement
         startActivityForResult(mediaIntent, REQUESTCODE_PICK_FILE);
+    }
+
+    private void saveMessage() {
+        DbModelMessage dbModelMessage = new DbModelMessage();
+        dbModelMessage.setNumbers(numbers);
+        dbModelMessage.setText(messageBody);
+        presenterHome.saveMessage(DatabaseHouse.getSingleTon(getApplicationContext()), dbModelMessage);
     }
 
     @Override
@@ -235,9 +241,8 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 selectFileCode();
                 break;
             case R.id.btnSend:
-
+                saveMessage();
                 break;
-
         }
     }
 
@@ -248,17 +253,17 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
         String name = dbModelContact.getName();
         String text = editMessage.getText().toString();
-
         int lastIndexOpenBrackect = text.lastIndexOf("{");
-
         String str = text.substring(lastIndexOpenBrackect, text.length());
         name = "{" + name + "};";
         text = text.replace(str, name);
-
         editMessage.setText("");
         editMessage.setText(text);
         editMessage.setSelection(text.length());
 
+
+        numbers += dbModelContact.getNumber() + ",";
+        messageBody = text.substring(0, text.indexOf("{"));
 
         Toast.makeText(HomeActivity.this, str + " CLicked  " + position + name, Toast.LENGTH_SHORT).show();
 

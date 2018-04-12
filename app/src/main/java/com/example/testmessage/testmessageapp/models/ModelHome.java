@@ -93,6 +93,25 @@ public class ModelHome {
         });
     }
 
+    public void saveMessage(final ISaveMessage callbackSavedMessage ,final DatabaseHouse databaseHouse, final DbModelMessage dbModelMessage) {
+        AppExecutor.getINSTANCE().getDiskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                //Insert into database
+                MessageDao messageDao = databaseHouse.getMessageDao();
+
+
+                messageDao.insert(dbModelMessage);
+
+                AppExecutor.getINSTANCE().getMainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        callbackSavedMessage.onMessageSavedSuccess();
+                    }
+                });
+            }
+        });
+    }
 
     public void parseCSV(final IParseCsv callback, DatabaseHouse databaseHouse, final InputStream inputStream) {
 
