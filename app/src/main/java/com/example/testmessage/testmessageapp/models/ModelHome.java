@@ -20,8 +20,9 @@ public class ModelHome {
     private ContactDao contactDao = null;
     private MessageDao messageDao = null;
     private IContactLoad iContactLoad = null;
-    private IContactSync contactSync = null;
+    private ISearchContact iSearchContact = null;
     ISaveMessage callbackSavedMessage = null;
+    private List<DbModelContact> dbModelContacts;
 
     public interface IContactLoad {
         void onContactLoadSuccess(List<DbModelContact> dbModelContacts);
@@ -29,10 +30,10 @@ public class ModelHome {
         void onContactLoadFail();
     }
 
-    public interface IContactSync {
-        void onContactSyncSuccess();
+    public interface ISearchContact {
+        void onContactSearchSuccess(List<DbModelContact> dbModelContacts);
 
-        void onCOntactSyncFail();
+        void onCOntactSearchFail();
     }
 
     public interface IParseCsv {
@@ -48,12 +49,24 @@ public class ModelHome {
         void onMessageSavedFail();
     }
 
-    public void getAllContact(final ModelHome.IContactLoad iContactLoad, DatabaseHouse databaseHouse) {
-
+    public void getAllContact(final ISearchContact iSearchContact, final DatabaseHouse databaseHouse, final String name) {
+        Log.e("inside", "getAllContact");
         AppExecutor.getINSTANCE().getDiskIO().execute(new Runnable() {
             @Override
             public void run() {
                 //Query to contacts
+                Log.e("inside", "getAllContact2");
+                contactDao = databaseHouse.getContactDao();
+                dbModelContacts = contactDao.getAllContact(name);
+                Log.e("inside", "getAllContact3");
+
+                AppExecutor.getINSTANCE().getMainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("inside", "getAllContact4");
+                        iSearchContact.onContactSearchSuccess(dbModelContacts);
+                    }
+                });
             }
         });
     }
@@ -79,9 +92,6 @@ public class ModelHome {
             }
         });
     }
-
-
-
 
 
     public void parseCSV(final IParseCsv callback, DatabaseHouse databaseHouse, final InputStream inputStream) {

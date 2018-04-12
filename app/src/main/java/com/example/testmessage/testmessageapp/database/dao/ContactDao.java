@@ -13,9 +13,14 @@ import java.util.List;
 @Dao
 public interface ContactDao {
 
-    @Query("SELECT * FROM " + Constants.DatabaseConstants.CONTACTS.TABLE_NAME_CONTACT)
-    List<DbModelContact> getAllContact();
 
+    @Query("SELECT * FROM " + Constants.DatabaseConstants.CONTACTS.TABLE_NAME_CONTACT + " WHERE " + Constants.DatabaseConstants.CONTACTS.COLUMN_NAME_CONATACT_NAME + " LIKE :name")
+    List<DbModelContact> getAllContact(String name);
+
+
+    /* @Query("SELECT * FROM " + Constants.DatabaseConstants.CONTACTS.TABLE_NAME_CONTACT)
+     List<DbModelContact> getAllContact();
+ */
     @Insert
     void insertAll(List<DbModelContact> dbModelContacts);
 

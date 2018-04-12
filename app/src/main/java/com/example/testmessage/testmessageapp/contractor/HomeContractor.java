@@ -19,10 +19,13 @@ public interface HomeContractor {
 
         void onParseCsvFail(String strError);
 
+        void onSearchContactSuccess(List<DbModelContact> dbModelContacts);
+
+        void onSearchContactFail();
     }
 
     interface IPresenterHome extends IPresenter {
-        void loadContacts(DatabaseHouse databaseHouse);
+        void loadContacts(DatabaseHouse databaseHouse,String name);
 
         void insertContact(DatabaseHouse databaseHouse, List<DbModelContact> dbModelContacts);
 
