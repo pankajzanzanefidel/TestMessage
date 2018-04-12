@@ -53,13 +53,14 @@ public class PresenterHome implements HomeContractor.IPresenterHome {
     ModelHome.IContactLoad callBackIcontactLoad = new ModelHome.IContactLoad() {
         @Override
         public void onContactLoadSuccess(List<DbModelContact> dbModelContacts) {
-            iViewHome.toggleProgressIndigator(false);
+          //  iViewHome.toggleProgressIndigator(false);
             iViewHome.onContactLoadSuccess(dbModelContacts);
         }
 
         @Override
         public void onContactLoadFail() {
-            iViewHome.toggleProgressIndigator(false);
+
+            //iViewHome.toggleProgressIndigator(false);
         }
     };
 

@@ -14,8 +14,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -24,9 +25,7 @@ import com.example.testmessage.testmessageapp.adapter.CustomAdapter;
 import com.example.testmessage.testmessageapp.contractor.HomeContractor;
 import com.example.testmessage.testmessageapp.database.DatabaseHouse;
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelContact;
-
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelMessage;
-
 import com.example.testmessage.testmessageapp.helper.PreferenceUtils;
 import com.example.testmessage.testmessageapp.jobschedules.SmsJobSchedule;
 import com.example.testmessage.testmessageapp.presenter.PresenterHome;
@@ -38,11 +37,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-
 import java.util.ArrayList;
-
 import java.util.Arrays;
-
 import java.util.List;
 
 
@@ -55,6 +51,8 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     private EditText editMessage = null, editTimeInSec = null, editstartTimeRange = null, editEndTimeRange = null;
     private RadioGroup radioGroup = null;
     private RecyclerView recyclerView = null;
+    private LinearLayout linearLayout;
+
 
     private boolean flagOpen = false;
     private int charOpenAt = 0;
@@ -74,9 +72,9 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         setContentView(R.layout.activity_home);
         preferenceUtils = PreferenceUtils.getINSTANCE(this);
         checkPermission();
-
         initView();
         init();
+
 
     }
 
@@ -97,6 +95,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         findViewById(R.id.btnSend).setOnClickListener(this);
 
         recyclerView = findViewById(R.id.listview);
+        linearLayout = findViewById(R.id.layout);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -137,10 +136,16 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                     flagOpen = false;
                     charOpenAt = 0;
                 } else if (flagOpen && s.length() > charOpenAt) {
+                    linearLayout.setVisibility(View.VISIBLE);
                     loadData(s.subSequence(charOpenAt + 1, s.length()).toString());
                 } else {
                     flagOpen = false;
                     charOpenAt = 0;
+                    if (null != dbModelContacts) {
+                        dbModelContacts.clear();
+                        linearLayout.setVisibility(View.GONE);
+                        customAdapter.notifyDataSetChanged();
+                    }
                 }
             }
 
@@ -154,7 +159,6 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     private void loadData(String text) {
         Log.e("WASTE", text);
-
         presenterHome.loadContacts(DatabaseHouse.getSingleTon(getApplicationContext()), text + "%");
     }
 
@@ -192,12 +196,15 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     @Override
     public void onSearchContactFail() {
-
+        if (null != dbModelContacts) {
+            dbModelContacts.clear();
+            linearLayout.setVisibility(View.GONE);
+            customAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onSaveMessageSuccess() {
-
         // message is scheduled
         Toast.makeText(HomeActivity.this, "Message Saved", Toast.LENGTH_LONG).show();
         clearEditText();
@@ -220,6 +227,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     private void saveMessage() {
         DbModelMessage dbModelMessage = new DbModelMessage();
+
         dbModelMessage.setNumbers(numbers);
         dbModelMessage.setText(messageBody);
         presenterHome.saveMessage(DatabaseHouse.getSingleTon(getApplicationContext()), dbModelMessage);
@@ -263,7 +271,8 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 break;
             case R.id.btnSend:
 
-                saveMessage();
+                if (editMessage.getText().toString().length() > 0)
+                    saveMessage();
 
                 int timeDelayInSeconds = 0;
                 switch (radioGroup.getCheckedRadioButtonId()) {
@@ -273,12 +282,10 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                     case R.id.radioRandom:
                         timeDelayInSeconds = RandomUtils.getRandomInrange(Integer.parseInt(!TextUtils.isEmpty(editstartTimeRange.getText().toString()) ? editstartTimeRange.getText().toString() : "0"),
                                 Integer.parseInt(!TextUtils.isEmpty(editEndTimeRange.getText().toString()) ? editEndTimeRange.getText().toString() : "0"));
-
                         break;
                 }
                 String message = editMessage.getText().toString();
                 jobTest(message, Arrays.asList(new String[]{"09870927098", "08830634929"}), timeDelayInSeconds);
-
                 break;
         }
     }
@@ -305,17 +312,24 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         String name = dbModelContact.getName();
         String text = editMessage.getText().toString();
         int lastIndexOpenBrackect = text.lastIndexOf("{");
-        String str = text.substring(lastIndexOpenBrackect, text.length());
+        String str1 = text.substring(lastIndexOpenBrackect, text.length());// name
+        String str2 = text.substring(0, lastIndexOpenBrackect);// message
+
         name = "{" + name + "};";
-        text = text.replace(str, name);
+        Log.e("GARBAGE", str1);
+        Log.e("GARBAGE", name);
+        str1 = str1.replace(str1, name);
+        Log.e("GARBAGE", str1);
+
+        str2 += str1;
         editMessage.setText("");
-        editMessage.setText(text);
-        editMessage.setSelection(text.length());
+        editMessage.setText(str2);
+        editMessage.setSelection(str2.length());
 
 
         numbers += dbModelContact.getNumber() + ",";
         messageBody = text.substring(0, text.indexOf("{"));
 
-        Toast.makeText(HomeActivity.this, str + " CLicked  " + position + name, Toast.LENGTH_SHORT).show();
+
     }
 }
