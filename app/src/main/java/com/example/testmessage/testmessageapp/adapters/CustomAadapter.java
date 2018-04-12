@@ -45,7 +45,7 @@ public class CustomAadapter extends RecyclerView.Adapter<CustomAadapter.ContactV
         public ContactViewHolder(View itemView) {
             super(itemView);
 
-            txtname = itemView.findViewById(R.id.lbl_name);
+            txtname = itemView.findViewById(R.id.textName);
         }
     }
 }

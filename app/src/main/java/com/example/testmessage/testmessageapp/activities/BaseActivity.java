@@ -1,12 +1,14 @@
 package com.example.testmessage.testmessageapp.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.example.testmessage.testmessageapp.R;
 import com.example.testmessage.testmessageapp.contractor.IView;
 import com.example.testmessage.testmessageapp.helper.Constants;
 import com.example.testmessage.testmessageapp.helper.PreferenceUtils;
@@ -18,16 +20,52 @@ public class BaseActivity extends AppCompatActivity implements IView {
     private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
     PreferenceUtils preferenceUtils = null;
 
+    private ProgressDialog progressDialog = null;
+
+    protected void showSpinner() {
+        if (progressDialog == null)
+            progressDialog = ProgressDialog.show(this, "", getString(R.string.please_wait), true);
+        else if (!progressDialog.isShowing())
+            progressDialog.show();
+    }
+
+    protected void showSpinner(String title, String message) {
+        if (progressDialog == null)
+            progressDialog = ProgressDialog.show(this, title, message, true);
+        else if (!progressDialog.isShowing())
+            progressDialog.show();
+    }
+
+    protected void hideSpinner() {
+        if (progressDialog == null)
+            return;
+
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
+
+    }
 
     @Override
     public void toggleProgressIndigator(boolean show) {
 
+        if (show) {
+            showSpinner();
+        } else {
+            hideSpinner();
+        }
     }
 
     @Override
     public void toggleProgressIndigator(boolean show, String title, String message) {
-
+        if (show) {
+            showSpinner(title, message);
+        } else {
+            hideSpinner();
+        }
     }
+
 
     public void checkPermission() {
         if (ContextCompat.checkSelfPermission(this,
@@ -41,8 +79,8 @@ public class BaseActivity extends AppCompatActivity implements IView {
                         MY_PERMISSIONS_REQUEST_SEND_SMS);
             }
         } else {
-            Toast.makeText(getApplicationContext(), "Already allowed",
-                    Toast.LENGTH_LONG).show();
+           /* Toast.makeText(getApplicationContext(), "Already allowed",
+                    Toast.LENGTH_LONG).show();*/
         }
 ////
         if (ContextCompat.checkSelfPermission(this,
@@ -59,8 +97,8 @@ public class BaseActivity extends AppCompatActivity implements IView {
                         MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             }
         } else {
-            Toast.makeText(getApplicationContext(), "Already allowed",
-                    Toast.LENGTH_LONG).show();
+          /*  Toast.makeText(getApplicationContext(), "Already allowed",
+                    Toast.LENGTH_LONG).show();*/
         }
 
 
@@ -76,8 +114,8 @@ public class BaseActivity extends AppCompatActivity implements IView {
                         MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             }
         } else {
-            Toast.makeText(getApplicationContext(), "Already allowed",
-                    Toast.LENGTH_LONG).show();
+          /*  Toast.makeText(getApplicationContext(), "Already allowed",
+                    Toast.LENGTH_LONG).show();*/
         }
     }
 

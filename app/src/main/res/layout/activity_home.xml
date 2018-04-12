@@ -7,116 +7,128 @@
     tools:context=".activities.HomeActivity">
 
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:orientation="vertical">
 
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_marginTop="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:text="Choose the file"
-
-                    android:textSize="20dp" />
-
-                <Button
-                    android:id="@+id/btnBrowse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_gravity="left"
-                    android:text="Browse" />
-            </RelativeLayout>
-
-            <TextView
-                android:id="@+id/importedContacts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="Imported 123 contacts" />
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginTop="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="Available variables {1};{2}" />
+                android:layout_centerVertical="true"
+                android:text="Choose the file"
 
-            <EditText
-                android:id="@+id/editMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:hint="enter your text" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <RadioGroup
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:text="Time" />
-
-                    <RadioButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Random" />
-                </RadioGroup>
-
-                <EditText
-                    android:id="@+id/timeInSec"
-                    android:layout_width="200dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentRight="true"
-
-                    android:hint="time in sec" />
-
-                <EditText
-                    android:id="@+id/to"
-                    android:layout_width="50dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@+id/timeInSec"
-                    android:layout_marginRight="20dp"
-                    android:hint="to" />
-
-                <EditText
-                    android:id="@+id/from"
-                    android:layout_width="50dp"
-                    android:layout_height="40dp"
-                    android:layout_below="@+id/timeInSec"
-                    android:layout_marginRight="20dp"
-                    android:layout_toLeftOf="@+id/to"
-                    android:hint="from" />
-            </RelativeLayout>
+                android:textSize="20dp" />
 
             <Button
-                android:id="@+id/btnSend"
+                android:id="@+id/btnBrowse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_gravity="left"
-                android:text="Send" />
+                android:text="Browse" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/importedContacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Imported 123 contacts" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Available variables {1};{2}" />
+
+
+        <EditText
+            android:id="@+id/editMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="enter your text" />
+
+        <LinearLayout
+            android:id="@+id/layout"
+
+
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/listview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </android.support.v7.widget.RecyclerView>
+
         </LinearLayout>
-    </ScrollView>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Time" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Random" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/timeInSec"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+
+                android:hint="time in sec" />
+
+            <EditText
+                android:id="@+id/to"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/timeInSec"
+                android:layout_marginRight="20dp"
+                android:hint="to" />
+
+            <EditText
+                android:id="@+id/from"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/timeInSec"
+                android:layout_marginRight="20dp"
+                android:layout_toLeftOf="@+id/to"
+                android:hint="from" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="left"
+            android:text="Send" />
+    </LinearLayout>
 
 
 </LinearLayout>
