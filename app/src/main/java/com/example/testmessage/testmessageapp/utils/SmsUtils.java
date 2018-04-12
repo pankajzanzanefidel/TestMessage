@@ -3,7 +3,9 @@ package com.example.testmessage.testmessageapp.utils;
 import android.content.Context;
 import android.telephony.SmsManager;
 
-public class SmsClass {
+import java.util.List;
+
+public class SmsUtils {
 
     public interface ISmsSending {
         void onSmsSent();
@@ -13,18 +15,24 @@ public class SmsClass {
 
     private ISmsSending iSmsSending = null;
 
-     public SmsClass(ISmsSending iSmsSending) {
+     public SmsUtils(ISmsSending iSmsSending) {
         this.iSmsSending = iSmsSending;
     }
 
-    public void sendMsg(Context context, String msg, String number) {
+    public void sendMsg(Context context, String msg, List<String> listNumbers) {
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(number, null, msg, null, null);
-            iSmsSending.onSmsSent();
+
+            for(String number:  listNumbers){
+                smsManager.sendTextMessage(number, null, msg, null, null);
+            }
+
+            if(iSmsSending!=null)
+                iSmsSending.onSmsSent();
         } catch (Exception e) {
-            iSmsSending.onSmsFail();
+            if(iSmsSending!=null)
+                iSmsSending.onSmsFail();
             e.printStackTrace();
         }
     }

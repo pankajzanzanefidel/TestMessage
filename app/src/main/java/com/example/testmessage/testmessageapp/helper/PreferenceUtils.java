@@ -19,6 +19,7 @@ public class PreferenceUtils {
 		return INSTANCE;
 	}
 	private static String PREFERENCE_NAME = "TEST_MESSAGE";
+	public static String PREF_JOB_ID = "PREF_JOB_ID";
 
 	public void putString(String key, String value) {
 
