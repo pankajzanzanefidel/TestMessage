@@ -18,21 +18,4 @@ public class InputStreamHelper {
         return inputStream;
     }
 
-    /*private InputStream getInputStreamForVirtualFile(Context context, Uri uri, String mimeTypeFilter)
-            throws IOException {
-
-        ContentResolver resolver = context.getContentResolver();
-
-        String[] openableMimeTypes = resolver.getStreamTypes(uri, mimeTypeFilter);
-
-        if (openableMimeTypes == null ||
-                openableMimeTypes.length < 1) {
-            throw new FileNotFoundException();
-        }
-
-        return resolver
-                .openTypedAssetFileDescriptor(uri, openableMimeTypes[0], null)
-                .createInputStream();
-    }*/
-
 }
