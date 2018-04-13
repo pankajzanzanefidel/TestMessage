@@ -1,11 +1,14 @@
 package com.example.testmessage.testmessageapp.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -269,9 +272,22 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnBrowse:
+
+                if(!isPermissionGranted(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                    Toast.makeText(this,"Write External Permission not granted",Toast.LENGTH_LONG).show();
+                    checkPermission();
+                    return;
+                }
                 selectFileCode();
+
                 break;
             case R.id.btnSend:
+
+                if(!isPermissionGranted(Manifest.permission.SEND_SMS)){
+                    Toast.makeText(this,"Send SMS Permission not granted",Toast.LENGTH_LONG).show();
+                    checkPermission();
+                    return;
+                }
                 int timeDelayInSeconds = 0;
                 switch (radioGroup.getCheckedRadioButtonId()) {
                     case R.id.radioTime:
@@ -354,5 +370,14 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         builder.deleteCharAt(builder.length()-1);
 
         return builder.toString();
+    }
+
+    private boolean isPermissionGranted(String permission){
+
+        if(ContextCompat.checkSelfPermission(this,permission) != PackageManager.PERMISSION_GRANTED){
+           return false;
+        }
+
+        return true;
     }
 }
