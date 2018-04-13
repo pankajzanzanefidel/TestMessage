@@ -21,6 +21,8 @@ public class CSVParser {
             String csvLine;
             while ((csvLine = reader.readLine()) != null) {
                 String[] row = csvLine.split(",");
+
+                if(row.length>0)
                 resultList.add(row);
             }
         inputStream.close();

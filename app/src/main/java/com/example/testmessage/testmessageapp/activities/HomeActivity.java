@@ -31,6 +31,7 @@ import com.example.testmessage.testmessageapp.database.dataenetities.DbModelCont
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelMessage;
 
 import com.example.testmessage.testmessageapp.enums.EnumMessageState;
+import com.example.testmessage.testmessageapp.helper.InputStreamHelper;
 import com.example.testmessage.testmessageapp.helper.PreferenceUtils;
 import com.example.testmessage.testmessageapp.jobschedules.UtilsJobSchedule;
 import com.example.testmessage.testmessageapp.presenter.PresenterHome;
@@ -279,6 +280,12 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         switch (v.getId()) {
             case R.id.btnBrowse:
 
+                presenterHome.parseCSV(DatabaseHouse.getSingleTon(getApplicationContext()),
+                        InputStreamHelper.getInpustreamInstance(this));
+
+                return;
+
+                /*
                 if (!isPermissionGranted(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     Toast.makeText(this, "Write External Permission not granted", Toast.LENGTH_LONG).show();
                     checkPermission();
@@ -287,6 +294,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 selectFileCode();
 
                 break;
+                */
             case R.id.btnSend:
 
                 if (!isPermissionGranted(Manifest.permission.SEND_SMS)) {
