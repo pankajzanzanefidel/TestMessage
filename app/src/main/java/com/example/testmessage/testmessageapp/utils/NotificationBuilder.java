@@ -96,7 +96,7 @@ public class NotificationBuilder {
             notification = builder.build();
         } else {
 
-            CharSequence charSeq = "Greenforce";
+            CharSequence charSeq = "TestMessage";
             String notificationChannelId = Constants.NOTIFICATION.NOTIFICATION_CHANNEL_GLOBAL;
 
             NotificationChannel channel = new NotificationChannel(notificationChannelId,
