@@ -17,10 +17,12 @@ import com.example.testmessage.testmessageapp.helper.PreferenceUtils;
 
 public class BaseActivity extends AppCompatActivity implements IView {
 
-    private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
     PreferenceUtils preferenceUtils = null;
+
+    private String[] strRequiredPermissions = new String[]{
+            Manifest.permission.SEND_SMS,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.VIBRATE};
 
     private ProgressDialog progressDialog = null;
 
@@ -76,70 +78,24 @@ public class BaseActivity extends AppCompatActivity implements IView {
 
 
     public void checkPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.SEND_SMS)) {
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        MY_PERMISSIONS_REQUEST_SEND_SMS);
-            }
-        } else {
-           /* Toast.makeText(getApplicationContext(), "Already allowed",
-                    Toast.LENGTH_LONG).show();*/
-        }
-////
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
 
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-            }
-        } else {
-          /*  Toast.makeText(getApplicationContext(), "Already allowed",
-                    Toast.LENGTH_LONG).show();*/
-        }
-
-
-        ///
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-            }
-        } else {
-          /*  Toast.makeText(getApplicationContext(), "Already allowed",
-                    Toast.LENGTH_LONG).show();*/
-        }
+        ActivityCompat.requestPermissions(this,
+                strRequiredPermissions,
+                Constants.REQUESTCODE.REQUEST_ALL_PERMISSIONS);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 
+        if (requestCode == Constants.REQUESTCODE.REQUEST_ALL_PERMISSIONS && grantResults.length > 0) {
 
-        if (grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            preferenceUtils.putBoolean(Constants.SHARED_PREFERNCE.PREFERENCE_SMS_PERRMISION, true);
+            for(int i=0;i<grantResults.length;i++){
 
-        } else {
-            preferenceUtils.putBoolean(Constants.SHARED_PREFERNCE.PREFERENCE_SMS_PERRMISION, false);
-            return;
+                if(grantResults[i] == PackageManager.PERMISSION_GRANTED){
+                    //Should show rationale here and ask permission again
+                }
+            }
         }
-
 
     }
 }

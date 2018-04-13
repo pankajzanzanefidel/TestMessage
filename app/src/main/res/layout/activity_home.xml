@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="Choose the file"
+                android:text="@string/choose_the_file"
                 android:textColor="@color/colorBlack"
 
                 android:textSize="20dp" />
@@ -35,7 +35,7 @@
                 android:layout_gravity="left"
                 android:background="@drawable/back_btn"
                 android:elevation="3dp"
-                android:text="Browse"
+                android:text="@string/btn_browse"
                 android:textColor="@color/colorWhite" />
         </RelativeLayout>
 
@@ -45,24 +45,27 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
-            android:text="Imported 123 contacts"
+            android:text="@string/import_contact"
             android:textColor="@color/colorBlack"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:layout_marginBottom="20dp"
             android:layout_marginLeft="20dp"
-            android:text="Available variables {1};{2}"
+
+            android:text="Available variables {firstname};{firstname}"
             android:textColor="@color/colorBlack"
             android:textStyle="bold" />
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="Enter your message"
+            android:text="@string/enter_your_message"
             android:textColor="@color/colorBlack"
             android:textStyle="bold" />
 
@@ -153,7 +156,7 @@
             android:layout_gravity="right"
             android:layout_margin="10dp"
             android:background="@drawable/back_btn"
-            android:text="Send"
+            android:text="@string/btn_send"
             android:textColor="@color/colorWhite" />
     </LinearLayout>
 

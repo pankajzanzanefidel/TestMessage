@@ -124,6 +124,9 @@ public class ModelHome {
                 try {
                     scoreList = csvFile.read();
 
+                    //Remove first Column, which is a Header in CSV
+                    scoreList.remove(0);
+
                     final List<DbModelContact> dbModelContacts = new ArrayList();
                     DbModelContact dbModelContact;
                     for (String[] scoreData : scoreList) {

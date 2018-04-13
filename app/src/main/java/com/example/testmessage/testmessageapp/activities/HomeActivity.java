@@ -1,11 +1,14 @@
 package com.example.testmessage.testmessageapp.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -67,7 +70,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     List<DbModelContact> dbModelContacts = null;
 
     private CustomAdapter customAdapter = null;
-    public static  final int PERIODIC_JOB_INTERVAL_SEC = 5*60*1000;
+    public static final int PERIODIC_JOB_INTERVAL_SEC = 5 * 60 * 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,7 +235,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         startActivityForResult(mediaIntent, REQUESTCODE_PICK_FILE);
     }
 
-    private void saveMessage(int jobId,String message,String numbers) {
+    private void saveMessage(int jobId, String message, String numbers) {
         DbModelMessage dbModelMessage = new DbModelMessage();
         dbModelMessage.setJobId(jobId);
         dbModelMessage.setNumbers(numbers);
@@ -275,9 +278,22 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnBrowse:
+
+                if (!isPermissionGranted(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Toast.makeText(this, "Write External Permission not granted", Toast.LENGTH_LONG).show();
+                    checkPermission();
+                    return;
+                }
                 selectFileCode();
+
                 break;
             case R.id.btnSend:
+
+                if (!isPermissionGranted(Manifest.permission.SEND_SMS)) {
+                    Toast.makeText(this, "Send SMS Permission not granted", Toast.LENGTH_LONG).show();
+                    checkPermission();
+                    return;
+                }
                 int timeDelayInSeconds = 0;
                 switch (radioGroup.getCheckedRadioButtonId()) {
                     case R.id.radioTime:
@@ -291,9 +307,11 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 String message = editMessage.getText().toString();
                 jobTest(message, listNumbers, timeDelayInSeconds);
 
-                if(listNumbers!=null){
+                if (listNumbers != null) {
                     listNumbers.clear();
                 }
+
+                clearAllEditText();
                 break;
         }
     }
@@ -305,7 +323,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
             return;
         }
 
-        if(listNumbers == null || listNumbers.size()<=0){
+        if (listNumbers == null || listNumbers.size() <= 0) {
             Toast.makeText(this, getString(R.string.no_contacts), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -317,7 +335,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         jobScheduler.schedule(jobInfo);
 
         //Save message to database
-        saveMessage(jobInfo.getId(),messageBody,toCommanSeparated(listNumbers));
+        saveMessage(jobInfo.getId(), messageBody, toCommanSeparated(listNumbers));
     }
 
     @Override
@@ -349,16 +367,33 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     }
 
-    private String toCommanSeparated(List<String> list){
+
+    public void clearAllEditText() {
+        editMessage.setText("");
+        editTimeInSec.setText("");
+        editstartTimeRange.setText("");
+        editEndTimeRange.setText("");
+    }
+
+    private String toCommanSeparated(List<String> list) {
 
         StringBuilder builder = new StringBuilder();
-        for(String str:list){
+        for (String str : list) {
             builder.append(str);
             builder.append(",");
         }
 
-        builder.deleteCharAt(builder.length()-1);
+        builder.deleteCharAt(builder.length() - 1);
 
         return builder.toString();
+    }
+
+    private boolean isPermissionGranted(String permission) {
+
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+
+        return true;
     }
 }

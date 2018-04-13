@@ -44,4 +44,8 @@ public class Constants {
         public static final int NOTIFICATION_ID_SERVICESAVE_FORGROUND = 1000;
         public static final int NOTIFICATION_ID_PUSH_DATA = 1001;
     }
+
+    public static  final class REQUESTCODE {
+        public static final int REQUEST_ALL_PERMISSIONS = 102;
+    }
 }

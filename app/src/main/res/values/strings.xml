@@ -4,4 +4,9 @@
 
     <string name="message_empty_error">Message cannot be empty</string>
     <string name="no_contacts">No contacts are added in message box</string>
+    <string name="enter_your_message">Enter your message</string>
+    <string name="import_contact">Imported 123 contacts</string>
+    <string name="choose_the_file">Choose the file</string>
+    <string name="btn_browse">Browse</string>
+    <string name="btn_send">Send</string>
 </resources>
