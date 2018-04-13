@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.testmessage.testmessageapp.R;
@@ -52,7 +53,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     private RadioGroup radioGroup = null;
     private RecyclerView recyclerView = null;
     private LinearLayout linearLayout;
-
+    private TextView importedREcords;
 
     private boolean flagOpen = false;
     private int charOpenAt = 0;
@@ -96,6 +97,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
         recyclerView = findViewById(R.id.listview);
         linearLayout = findViewById(R.id.layout);
+        importedREcords = findViewById(R.id.importedContacts);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -164,6 +166,10 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     @Override
     public void onContactLoadSuccess(List<DbModelContact> dbModelContacts) {
+
+
+        int size = dbModelContacts != null ? dbModelContacts.size() : 0;
+        importedREcords.setText("Imported " + size + " contacts");
         //Contacts Loaded
         Toast.makeText(this, "loaded contacts: " + (dbModelContacts != null ? dbModelContacts.size() : 0), Toast.LENGTH_SHORT).show();
     }
