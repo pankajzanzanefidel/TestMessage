@@ -39,4 +39,6 @@ public interface MessageDao {
 
     @Query("DELETE FROM " + Constants.DatabaseConstants.MESSAGE.TABLE_NAME_MESSAGE)
     void deleteAll();
+
+
 }

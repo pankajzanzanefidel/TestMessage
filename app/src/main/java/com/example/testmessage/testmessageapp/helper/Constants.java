@@ -38,5 +38,10 @@ public class Constants {
         public static final String PREFERENCE_EXTERNAL_STORAGE_PERMISSION = "PREFERENCE_EXTERNAL_STORAGE_PERMISSION";
 
     }
+    public static final class NOTIFICATION {
+        public static final String NOTIFICATION_CHANNEL_GLOBAL = "NOTIFICATION_CHANNEL_GLOBAL";
 
+        public static final int NOTIFICATION_ID_SERVICESAVE_FORGROUND = 1000;
+        public static final int NOTIFICATION_ID_PUSH_DATA = 1001;
+    }
 }

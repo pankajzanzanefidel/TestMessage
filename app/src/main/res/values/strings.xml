@@ -3,4 +3,5 @@
     <string name="please_wait">please wait ...</string>
 
     <string name="message_empty_error">Message cannot be empty</string>
+    <string name="no_contacts">No contacts are added in message box</string>
 </resources>

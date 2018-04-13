@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -23,7 +24,6 @@ import com.example.testmessage.testmessageapp.adapter.CustomAdapter;
 import com.example.testmessage.testmessageapp.contractor.HomeContractor;
 import com.example.testmessage.testmessageapp.database.DatabaseHouse;
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelContact;
-
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelMessage;
 
 import com.example.testmessage.testmessageapp.enums.EnumMessageState;
@@ -39,11 +39,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-
 import java.util.ArrayList;
-
-import java.util.Arrays;
-
 import java.util.List;
 
 
@@ -53,22 +49,24 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     private int REQUESTCODE_PICK_FILE = 101;
 
 
-    private EditText editMessage = null,editTimeInSec = null,editstartTimeRange = null, editEndTimeRange = null;
+    private EditText editMessage = null, editTimeInSec = null, editstartTimeRange = null, editEndTimeRange = null;
     private RadioGroup radioGroup = null;
     private RecyclerView recyclerView = null;
+    private LinearLayout linearLayout;
+
 
     private boolean flagOpen = false;
     private int charOpenAt = 0;
     private int prevLength = 0;
 
-    private String numbers = null;
+    private List<String> listNumbers = new ArrayList<>();
     private String messageBody = null;
 
     List<DbModelMessage> dbModelMessages = null;
     List<DbModelContact> dbModelContacts = null;
 
     private CustomAdapter customAdapter = null;
-    public static  final int PERIODIC_JOB_INTERVAL_SEC = 10;
+    public static  final int PERIODIC_JOB_INTERVAL_SEC = 5*60*1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +74,6 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         setContentView(R.layout.activity_home);
         preferenceUtils = PreferenceUtils.getINSTANCE(this);
         checkPermission();
-
         initView();
         init();
         UtilsAlarmManager.setRepeatingNotification(this);
@@ -99,6 +96,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         findViewById(R.id.btnSend).setOnClickListener(this);
 
         recyclerView = findViewById(R.id.listview);
+        linearLayout = findViewById(R.id.layout);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -116,6 +114,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
         editMessage.addTextChangedListener(new TextWatcher() {
             Character lastChar;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if (s.length() > 0) {
@@ -138,10 +137,16 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                     flagOpen = false;
                     charOpenAt = 0;
                 } else if (flagOpen && s.length() > charOpenAt) {
+                    linearLayout.setVisibility(View.VISIBLE);
                     loadData(s.subSequence(charOpenAt + 1, s.length()).toString());
                 } else {
                     flagOpen = false;
                     charOpenAt = 0;
+                    if (null != dbModelContacts) {
+                        dbModelContacts.clear();
+                        linearLayout.setVisibility(View.GONE);
+                        customAdapter.notifyDataSetChanged();
+                    }
                 }
             }
 
@@ -155,7 +160,6 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     private void loadData(String text) {
         Log.e("WASTE", text);
-
         presenterHome.loadContacts(DatabaseHouse.getSingleTon(getApplicationContext()), text + "%");
     }
 
@@ -193,12 +197,15 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
     @Override
     public void onSearchContactFail() {
-
+        if (null != dbModelContacts) {
+            dbModelContacts.clear();
+            linearLayout.setVisibility(View.GONE);
+            customAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onSaveMessageSuccess() {
-
         // message is scheduled
         Toast.makeText(HomeActivity.this, "Message Saved", Toast.LENGTH_LONG).show();
         clearEditText();
@@ -219,11 +226,11 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         startActivityForResult(mediaIntent, REQUESTCODE_PICK_FILE);
     }
 
-    private void saveMessage(int jobId) {
+    private void saveMessage(int jobId,String message,String numbers) {
         DbModelMessage dbModelMessage = new DbModelMessage();
         dbModelMessage.setJobId(jobId);
         dbModelMessage.setNumbers(numbers);
-        dbModelMessage.setText(messageBody);
+        dbModelMessage.setText(message);
         dbModelMessage.setState(EnumMessageState.PENDING.ordinal());
         presenterHome.saveMessage(DatabaseHouse.getSingleTon(getApplicationContext()), dbModelMessage);
     }
@@ -265,29 +272,35 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 selectFileCode();
                 break;
             case R.id.btnSend:
-
                 int timeDelayInSeconds = 0;
-                switch (radioGroup.getCheckedRadioButtonId()){
+                switch (radioGroup.getCheckedRadioButtonId()) {
                     case R.id.radioTime:
-                        timeDelayInSeconds = Integer.parseInt(!TextUtils.isEmpty(editTimeInSec.getText().toString())?editTimeInSec.getText().toString():"0");
+                        timeDelayInSeconds = Integer.parseInt(!TextUtils.isEmpty(editTimeInSec.getText().toString()) ? editTimeInSec.getText().toString() : "0");
                         break;
                     case R.id.radioRandom:
-                        timeDelayInSeconds =  RandomUtils.getRandomInrange(Integer.parseInt(!TextUtils.isEmpty(editstartTimeRange.getText().toString())?editstartTimeRange.getText().toString():"0"),
-                                Integer.parseInt(!TextUtils.isEmpty(editEndTimeRange.getText().toString())?editEndTimeRange.getText().toString():"0"));
-
+                        timeDelayInSeconds = RandomUtils.getRandomInrange(Integer.parseInt(!TextUtils.isEmpty(editstartTimeRange.getText().toString()) ? editstartTimeRange.getText().toString() : "0"),
+                                Integer.parseInt(!TextUtils.isEmpty(editEndTimeRange.getText().toString()) ? editEndTimeRange.getText().toString() : "0"));
                         break;
                 }
                 String message = editMessage.getText().toString();
-                jobTest(message, Arrays.asList(new String[]{"09870927098","08830634929"}),timeDelayInSeconds);
+                jobTest(message, listNumbers, timeDelayInSeconds);
 
+                if(listNumbers!=null){
+                    listNumbers.clear();
+                }
                 break;
         }
     }
 
-    private void jobTest(String message,List<String> listNumbers,int delayInSeconds) {
+    private void jobTest(String message, List<String> listNumbers, int delayInSeconds) {
 
         if (TextUtils.isEmpty(message)) {
             Toast.makeText(this, getString(R.string.message_empty_error), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(listNumbers == null || listNumbers.size()<=0){
+            Toast.makeText(this, getString(R.string.no_contacts), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -298,7 +311,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         jobScheduler.schedule(jobInfo);
 
         //Save message to database
-        saveMessage(jobInfo.getId());
+        saveMessage(jobInfo.getId(),messageBody,toCommanSeparated(listNumbers));
     }
 
     @Override
@@ -309,17 +322,37 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         String name = dbModelContact.getName();
         String text = editMessage.getText().toString();
         int lastIndexOpenBrackect = text.lastIndexOf("{");
-        String str = text.substring(lastIndexOpenBrackect, text.length());
+        String str1 = text.substring(lastIndexOpenBrackect, text.length());// name
+        String str2 = text.substring(0, lastIndexOpenBrackect);// message
+
         name = "{" + name + "};";
-        text = text.replace(str, name);
+        Log.e("GARBAGE", str1);
+        Log.e("GARBAGE", name);
+        str1 = str1.replace(str1, name);
+        Log.e("GARBAGE", str1);
+
+        str2 += str1;
         editMessage.setText("");
-        editMessage.setText(text);
-        editMessage.setSelection(text.length());
+        editMessage.setText(str2);
+        editMessage.setSelection(str2.length());
 
 
-        numbers += dbModelContact.getNumber() + ",";
+        listNumbers.add(dbModelContact.getNumber());
         messageBody = text.substring(0, text.indexOf("{"));
 
-        Toast.makeText(HomeActivity.this, str + " CLicked  " + position + name, Toast.LENGTH_SHORT).show();
+
+    }
+
+    private String toCommanSeparated(List<String> list){
+
+        StringBuilder builder = new StringBuilder();
+        for(String str:list){
+            builder.append(str);
+            builder.append(",");
+        }
+
+        builder.deleteCharAt(builder.length()-1);
+
+        return builder.toString();
     }
 }
