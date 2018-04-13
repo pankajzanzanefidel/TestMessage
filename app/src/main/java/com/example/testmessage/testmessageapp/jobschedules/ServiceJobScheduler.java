@@ -40,7 +40,7 @@ public class ServiceJobScheduler extends JobService {
         you need to call jobFinsihed after thread finishes its task
         otherwise app will consume battery
         */
-        return false;
+        return true;
     }
 
     @Override
@@ -53,7 +53,13 @@ public class ServiceJobScheduler extends JobService {
         final int jobId = params.getJobId();
         String message = params.getExtras().getString("MESSAGE");
         List<String> listNumbers =Arrays.asList(params.getExtras().getStringArray("CONTACT_NUMBER"));
-        Log.d("WASTE","Params: "+params.getJobId() + " bundle: "+(params.getExtras()!=null?(params.getExtras().toString()):" No bundle"));
+
+        if(listNumbers == null || listNumbers.size()<=0){
+            return;
+        }
+
+        String[] arr = listNumbers.toArray(new String[]{});
+        Log.d("WASTE","Params: "+params.getJobId() +" Numbers: "+ Arrays.toString(arr));
 
         SmsUtils smsUtils = new SmsUtils(null);
         smsUtils.sendMsg(getApplicationContext(),message,listNumbers);
