@@ -359,7 +359,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         editMessage.setText("");
         editMessage.setText(str2);
         editMessage.setSelection(str2.length());
-
+        linearLayout.setVisibility(View.GONE);
 
         listNumbers.add(dbModelContact.getNumber());
         messageBody = text.substring(0, text.indexOf("{"));

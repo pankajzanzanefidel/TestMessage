@@ -93,12 +93,21 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/interval"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <RadioGroup
+                android:layout_marginLeft="5dp"
                 android:id="@+id/radioGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -118,33 +127,53 @@
                     android:text="Random" />
             </RadioGroup>
 
-            <EditText
-                android:id="@+id/timeInSec"
+            
+            <LinearLayout
+                android:layout_alignParentRight="true"
+                android:orientation="vertical"
                 android:layout_width="200dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:hint="time in sec"
-                android:inputType="number" />
+                android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/to"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/timeInSec"
-                android:layout_marginRight="20dp"
-                android:hint="to"
-                android:inputType="number" />
+                <EditText
+                    android:id="@+id/timeInSec"
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_alignParentRight="true"
+                    android:hint="@string/time_in_sec"
+                    android:inputType="number" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
 
-            <EditText
-                android:id="@+id/from"
-                android:layout_width="50dp"
-                android:layout_height="40dp"
-                android:layout_below="@+id/timeInSec"
-                android:layout_marginRight="20dp"
-                android:layout_toLeftOf="@+id/to"
-                android:hint="from"
-                android:inputType="number" />
+                        android:id="@+id/from"
+                        android:layout_width="50dp"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/timeInSec"
+                        android:layout_marginRight="20dp"
+                        android:layout_toLeftOf="@+id/to"
+                        android:hint="@string/from"
+                        android:inputType="number" />
+                    <EditText
+                        android:id="@+id/to"
+                        android:layout_width="50dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@+id/timeInSec"
+                        android:layout_marginRight="70dp"
+                        android:hint="@string/to"
+
+                        android:inputType="number" />
+
+                </LinearLayout>
+            </LinearLayout>
+            
+
+
+
+
         </RelativeLayout>
 
         <Button
