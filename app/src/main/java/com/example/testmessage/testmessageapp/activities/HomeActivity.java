@@ -71,7 +71,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     List<DbModelContact> dbModelContacts = null;
 
     private CustomAdapter customAdapter = null;
-    public static final int PERIODIC_JOB_INTERVAL_SEC = 5 * 60 * 1000;
+    public static final int PERIODIC_JOB_INTERVAL_SEC = 5 * 60;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,12 +280,11 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         switch (v.getId()) {
             case R.id.btnBrowse:
 
-                presenterHome.parseCSV(DatabaseHouse.getSingleTon(getApplicationContext()),
+        /*                presenterHome.parseCSV(DatabaseHouse.getSingleTon(getApplicationContext()),
                         InputStreamHelper.getInpustreamInstance(this));
 
-                return;
+                return;*/
 
-                /*
                 if (!isPermissionGranted(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     Toast.makeText(this, "Write External Permission not granted", Toast.LENGTH_LONG).show();
                     checkPermission();
@@ -294,7 +293,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                 selectFileCode();
 
                 break;
-                */
+
             case R.id.btnSend:
 
                 if (!isPermissionGranted(Manifest.permission.SEND_SMS)) {
