@@ -4,6 +4,7 @@ import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobService;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.testmessage.testmessageapp.activities.HomeActivity;
@@ -24,11 +25,11 @@ public class ServiceJobScheduler extends JobService {
     @Override
     public boolean onStartJob(final JobParameters params) {
 
-        if(params == null){
-            Log.d("WASTE","No job params");
+        if (params == null) {
+            Log.d("WASTE", "No job params");
         }
 
-        if(params.getExtras().getInt("JOBTYPE") == EnumJobType.SENDMESSAGE.ordinal()){
+        if (params.getExtras().getInt("JOBTYPE") == EnumJobType.SENDMESSAGE.ordinal()) {
 
             sendMessageJob(params);
 
@@ -48,21 +49,21 @@ public class ServiceJobScheduler extends JobService {
         return false;
     }
 
-    private void sendMessageJob(final JobParameters params){
+    private void sendMessageJob(final JobParameters params) {
 
         final int jobId = params.getJobId();
         String message = params.getExtras().getString("MESSAGE");
-        List<String> listNumbers =Arrays.asList(params.getExtras().getStringArray("CONTACT_NUMBER"));
+        String number = params.getExtras().getString("CONTACT_NUMBER");
+        String timeInDelay = params.getExtras().getString("TIMEDELAY");
+        if (TextUtils.isEmpty(number)) {
 
-        if(listNumbers == null || listNumbers.size()<=0){
             return;
         }
+        //  String[] arr = listNumbers.toArray(new String[]{});
+        Log.d("JOB", "Params: " + params.getJobId() + " Numbers: " + number + " timedelay " + timeInDelay);
 
-        String[] arr = listNumbers.toArray(new String[]{});
-        Log.d("WASTE","Params: "+params.getJobId() +" Numbers: "+ Arrays.toString(arr));
-
-        SmsUtils smsUtils = new SmsUtils(null);
-        smsUtils.sendMsg(getApplicationContext(),message,listNumbers);
+            SmsUtils smsUtils = new SmsUtils(null);
+            smsUtils.sendMsg(getApplicationContext(), message, number);
 
 
         AppExecutor.getINSTANCE().getDiskIO().execute(new Runnable() {
@@ -77,7 +78,7 @@ public class ServiceJobScheduler extends JobService {
                 AppExecutor.getINSTANCE().getMainThread().execute(new Runnable() {
                     @Override
                     public void run() {
-                        jobFinished(params,false);
+                        jobFinished(params, false);
                     }
                 });
             }

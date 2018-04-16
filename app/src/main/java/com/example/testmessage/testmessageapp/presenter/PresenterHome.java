@@ -33,6 +33,11 @@ public class PresenterHome implements HomeContractor.IPresenterHome {
         new ModelHome().getAllContact(callBackSearchContact, databaseHouse, name);
     }
 
+
+    public void loadAllContacts(DatabaseHouse databaseHouse) {
+        new ModelHome().getAllContact2(callBackSearchContact, databaseHouse);
+    }
+
     @Override
     public void insertContact(DatabaseHouse databaseHouse, List<DbModelContact> dbModelContacts) {
         new ModelHome().insertContact(callBackIcontactLoad, databaseHouse, dbModelContacts);

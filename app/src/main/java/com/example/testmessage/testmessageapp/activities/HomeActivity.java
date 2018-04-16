@@ -29,9 +29,8 @@ import com.example.testmessage.testmessageapp.contractor.HomeContractor;
 import com.example.testmessage.testmessageapp.database.DatabaseHouse;
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelContact;
 import com.example.testmessage.testmessageapp.database.dataenetities.DbModelMessage;
-
+import com.example.testmessage.testmessageapp.enums.EnumJobTimeType;
 import com.example.testmessage.testmessageapp.enums.EnumMessageState;
-import com.example.testmessage.testmessageapp.helper.InputStreamHelper;
 import com.example.testmessage.testmessageapp.helper.PreferenceUtils;
 import com.example.testmessage.testmessageapp.jobschedules.UtilsJobSchedule;
 import com.example.testmessage.testmessageapp.presenter.PresenterHome;
@@ -71,7 +70,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     List<DbModelContact> dbModelContacts = null;
 
     private CustomAdapter customAdapter = null;
-    public static final int PERIODIC_JOB_INTERVAL_SEC = 1 * 20;
+    public static final int PERIODIC_JOB_INTERVAL_SEC = 5 * 60;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +81,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         initView();
         init();
         UtilsAlarmManager.setRepeatingNotification(this);
+        //  generateCSV();
     }
 
     @Override
@@ -123,17 +123,17 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if (s.length() > 0) {
+              /*  if (s.length() > 0) {
                     lastChar = s.charAt(s.length() - 1);
                 } else {
                     lastChar = null;
-                }
+                }*/
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                if (s.length() <= 0) {
+            /*    if (s.length() <= 0) {
                     return;
                 }
                 if (s.charAt(s.length() - 1) == '{') {
@@ -143,17 +143,15 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
                     flagOpen = false;
                     charOpenAt = 0;
                 } else if (flagOpen && s.length() > charOpenAt) {
-                    linearLayout.setVisibility(View.VISIBLE);
+                   // linearLayout.setVisibility(View.VISIBLE);
                     loadData(s.subSequence(charOpenAt + 1, s.length()).toString());
                 } else {
                     flagOpen = false;
                     charOpenAt = 0;
-                    if (null != dbModelContacts) {
-                        dbModelContacts.clear();
-                        linearLayout.setVisibility(View.GONE);
-                        customAdapter.notifyDataSetChanged();
-                    }
+
                 }
+*/
+
             }
 
             @Override
@@ -164,15 +162,25 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     }
 
 
+    private void generateCSV() {
+        int c = 65;
+        for (int i = 0; i < 100; i++)
+            Log.e("CSV", "830534880" + i + "," + (char) (c + i) + "dam,surname");
+    }
+
     private void loadData(String text) {
         Log.e("WASTE", text);
-        presenterHome.loadContacts(DatabaseHouse.getSingleTon(getApplicationContext()), text + "%");
+        //presenterHome.loadContacts(DatabaseHouse.getSingleTon(getApplicationContext()), text + "%");
+    }
+
+    private void loadAllData() {
+        presenterHome.loadAllContacts(DatabaseHouse.getSingleTon(getApplicationContext()));
     }
 
     @Override
     public void onContactLoadSuccess(List<DbModelContact> dbModelContacts) {
 
-
+        this.dbModelContacts = dbModelContacts;
         int size = dbModelContacts != null ? dbModelContacts.size() : 0;
         importedREcords.setText("Imported " + size + " contacts");
         //Contacts Loaded
@@ -210,7 +218,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         if (null != dbModelContacts) {
             dbModelContacts.clear();
             linearLayout.setVisibility(View.GONE);
-            customAdapter.notifyDataSetChanged();
+            // customAdapter.notifyDataSetChanged();
         }
     }
 
@@ -296,23 +304,47 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
 
             case R.id.btnSend:
 
+
+//             /   loadAllData();
+
+
                 if (!isPermissionGranted(Manifest.permission.SEND_SMS)) {
                     Toast.makeText(this, "Send SMS Permission not granted", Toast.LENGTH_LONG).show();
                     checkPermission();
                     return;
                 }
                 int timeDelayInSeconds = 0;
+                int timeType = EnumJobTimeType.TIME.ordinal(), from = 0, to = 0;
+                boolean flag = false;
+
                 switch (radioGroup.getCheckedRadioButtonId()) {
+
                     case R.id.radioTime:
                         timeDelayInSeconds = Integer.parseInt(!TextUtils.isEmpty(editTimeInSec.getText().toString()) ? editTimeInSec.getText().toString() : "0");
+                        if (timeDelayInSeconds > 0)
+                            flag = true;
+
                         break;
                     case R.id.radioRandom:
-                        timeDelayInSeconds = RandomUtils.getRandomInrange(Integer.parseInt(!TextUtils.isEmpty(editstartTimeRange.getText().toString()) ? editstartTimeRange.getText().toString() : "0"),
-                                Integer.parseInt(!TextUtils.isEmpty(editEndTimeRange.getText().toString()) ? editEndTimeRange.getText().toString() : "0"));
+                        //timeDelayInSeconds = RandomUtils.getRandomInrange(Integer.parseInt(!TextUtils.isEmpty(editstartTimeRange.getText().toString()) ? editstartTimeRange.getText().toString() : "0"),
+                        //      Integer.parseInt(!TextUtils.isEmpty(editEndTimeRange.getText().toString()) ? editEndTimeRange.getText().toString() : "0"));
+                        from = Integer.parseInt(!TextUtils.isEmpty(editstartTimeRange.getText().toString()) ? editstartTimeRange.getText().toString() : "0");
+                        to = Integer.parseInt(!TextUtils.isEmpty(editEndTimeRange.getText().toString()) ? editEndTimeRange.getText().toString() : "0");
+
+                        timeType = EnumJobTimeType.RANDOM.ordinal();
+                        if (from > 0 && to > 0)
+                            flag = true;
                         break;
                 }
+
+
                 String message = editMessage.getText().toString();
-                jobTest(message, listNumbers, timeDelayInSeconds);
+
+
+                if (flag)
+                    jobTest(message, dbModelContacts, timeDelayInSeconds, from, to, timeType);
+                else
+                    Toast.makeText(HomeActivity.this, "Please enter interval", Toast.LENGTH_SHORT).show();
 
                 if (listNumbers != null) {
                     listNumbers.clear();
@@ -323,7 +355,44 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         }
     }
 
-    private void jobTest(String message, List<String> listNumbers, int delayInSeconds) {
+
+    private void jobTest(String message, List<DbModelContact> listNumbers, int delayInSeconds, int from, int to, int timeType) {
+
+        if (TextUtils.isEmpty(message)) {
+            Toast.makeText(this, getString(R.string.message_empty_error), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (listNumbers == null || listNumbers.size() <= 0) {
+            Toast.makeText(this, getString(R.string.no_contacts), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int temp = delayInSeconds;
+
+        for (DbModelContact dbModelContact : listNumbers) {
+
+
+            if (timeType == EnumJobTimeType.RANDOM.ordinal())
+                temp = RandomUtils.getRandomInrange(from, to);
+
+            UtilsJobSchedule smsJob = new UtilsJobSchedule();
+            JobInfo jobInfo = smsJob.createSmsJobSchedule(this, message, dbModelContact, temp * 1000);
+
+            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+            jobScheduler.schedule(jobInfo);
+
+            if (timeType == EnumJobTimeType.TIME.ordinal())
+                temp += delayInSeconds;
+            //Save message to database
+
+            Log.d("WASTE", "msg = " + message);
+            saveMessage(jobInfo.getId(), message, dbModelContact.getNumber());
+        }
+
+    }
+
+
+    /* private void jobTest(String message, List<String> listNumbers, int delayInSeconds) {
 
         if (TextUtils.isEmpty(message)) {
             Toast.makeText(this, getString(R.string.message_empty_error), Toast.LENGTH_SHORT).show();
@@ -344,7 +413,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
         //Save message to database
         saveMessage(jobInfo.getId(), messageBody, toCommanSeparated(listNumbers));
     }
-
+*/
     @Override
     public void itemClicked(View view, int position) {
 

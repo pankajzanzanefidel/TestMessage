@@ -49,6 +49,29 @@ public class ModelHome {
         void onMessageSavedFail();
     }
 
+
+    public void getAllContact2(final ISearchContact iSearchContact, final DatabaseHouse databaseHouse) {
+        Log.e("inside", "getAllContact");
+        AppExecutor.getINSTANCE().getDiskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                //Query to contacts
+                Log.e("inside", "getAllContact2");
+                contactDao = databaseHouse.getContactDao();
+                dbModelContacts = contactDao.getAllContact();
+                Log.e("inside", "getAllContact3");
+
+                AppExecutor.getINSTANCE().getMainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("inside", "getAllContact4");
+                        iSearchContact.onContactSearchSuccess(dbModelContacts);
+                    }
+                });
+            }
+        });
+    }
+
     public void getAllContact(final ISearchContact iSearchContact, final DatabaseHouse databaseHouse, final String name) {
         Log.e("inside", "getAllContact");
         AppExecutor.getINSTANCE().getDiskIO().execute(new Runnable() {
@@ -99,8 +122,6 @@ public class ModelHome {
             public void run() {
                 //Insert into database
                 MessageDao messageDao = databaseHouse.getMessageDao();
-
-
                 messageDao.insert(dbModelMessage);
 
                 AppExecutor.getINSTANCE().getMainThread().execute(new Runnable() {

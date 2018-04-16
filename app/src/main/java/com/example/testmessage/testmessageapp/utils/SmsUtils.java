@@ -19,14 +19,14 @@ public class SmsUtils {
         this.iSmsSending = iSmsSending;
     }
 
-    public void sendMsg(Context context, String msg, List<String> listNumbers) {
+    public void sendMsg(Context context, String msg, String listNumbers) {
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
 
-            for(String number:  listNumbers){
-                smsManager.sendTextMessage(number, null, msg, null, null);
-            }
+            //for(String number:  listNumbers){
+                smsManager.sendTextMessage(listNumbers, null, msg, null, null);
+            //}
 
             if(iSmsSending!=null)
                 iSmsSending.onSmsSent();

@@ -18,9 +18,9 @@ public interface ContactDao {
     List<DbModelContact> getAllContact(String name);
 
 
-    /* @Query("SELECT * FROM " + Constants.DatabaseConstants.CONTACTS.TABLE_NAME_CONTACT)
-     List<DbModelContact> getAllContact();
- */
+    @Query("SELECT * FROM " + Constants.DatabaseConstants.CONTACTS.TABLE_NAME_CONTACT)
+    List<DbModelContact> getAllContact();
+
     @Insert
     void insertAll(List<DbModelContact> dbModelContacts);
 
