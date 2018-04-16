@@ -20,7 +20,7 @@ public class UtilsAlarmManager {
 
         alarmMgr = (AlarmManager)mContext.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(mContext, AlarmBroadcastReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(mContext, REQUEST_CODE, intent, 0);
+        alarmIntent = PendingIntent.getBroadcast(mContext, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmMgr.setExact(AlarmManager.RTC_WAKEUP,
                 Calendar.getInstance().getTimeInMillis()+(HomeActivity.PERIODIC_JOB_INTERVAL_SEC*1000),

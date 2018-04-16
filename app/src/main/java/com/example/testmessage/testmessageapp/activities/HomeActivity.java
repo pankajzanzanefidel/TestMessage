@@ -71,7 +71,7 @@ public class HomeActivity extends BaseActivity implements HomeContractor.IViewHo
     List<DbModelContact> dbModelContacts = null;
 
     private CustomAdapter customAdapter = null;
-    public static final int PERIODIC_JOB_INTERVAL_SEC = 5 * 60;
+    public static final int PERIODIC_JOB_INTERVAL_SEC = 1 * 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
